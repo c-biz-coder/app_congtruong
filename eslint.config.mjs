@@ -43,4 +43,11 @@ export default tseslint.config(
       globals: globals.node,
     },
   },
+  {
+    // Expo loads config plugins with require(), so they must stay CommonJS.
+    files: ['apps/mobile/plugins/**/*.js'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
 );
