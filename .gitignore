@@ -40,7 +40,11 @@ supabase/.env
 
 # Expo / React Native
 .expo
-apps/mobile/android
+apps/mobile/android/.gradle
+apps/mobile/android/local.properties
+apps/mobile/android/app/debug.keystore
+apps/mobile/android/app/*.keystore
+apps/mobile/android/app/*.jks
 apps/mobile/ios
 apps/mobile/*.jks
 apps/mobile/*.p8
