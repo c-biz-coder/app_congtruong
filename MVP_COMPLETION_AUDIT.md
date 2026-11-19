@@ -84,7 +84,7 @@ Tổng cộng **8 P0 blockers**.
 | P0-05 | M-A chưa duyệt; role COMPANY_ADMIN/PROJECT_MANAGER/SITE_SUPERVISOR chưa có trong `roles`; `can_read_audit` vẫn dùng `'SYS_ADMIN'` | `supabase/seed/roles.sql`; `20260923000010_audit_log.sql` | Phân quyền theo công ty/dự án chưa vận hành; không ai đọc được audit đúng vai trò |
 | P0-06 | Thu hồi quyền phụ thuộc JWT (H5): claim cố định đến khi token hết hạn; JWT TTL UNVERIFIED | `004` hook JWT; `supabase/config.toml` không có `jwt_expiry` | Quyền cũ có thể còn hiệu lực; chưa đạt yêu cầu "Backend API và RLS thực thi quyền thực tế" |
 | P0-07 | Mâu thuẫn trạng thái sync trong tracker (dòng 29 vs 82) và tracker chưa khớp code | `docs/3_TRACKER.md:29`, `:82` | Không biết chức năng nào đã chạy; quyết định sai |
-| P0-08 | CI chưa có bằng chứng PASS gần nhất; workflow `db-test` chưa xác nhận trên máy này | `.github/workflows/db-test.yml`, `build-test.yml` | Không có căn cứ để gọi là "gate" |
+| P0-08 | Build & Test đã PASS trên `32072db` (run 44460394646); Architecture Guard PASS. Workflow `db-test` chưa có bằng chứng PASS | `.github/workflows/db-test.yml`, `build-test.yml` | Còn thiếu `db-test` |
 
 Ghi chú: P0-06 là blocker bảo mật thật sự, cần quyết định thiết kế (kiểm tra quyền từ DB ở mỗi request, hoặc rút ngắn TTL). Không đưa vào code cho đến khi duyệt.
 
@@ -134,8 +134,11 @@ Lưu ý: các mục `packages/i18n` và `packages/ui` đã có khung; không ưu
 | Vitest | `pnpm test` | 65/65 PASS (sync-engine, unit) | tiendo mục 11 | TESTED (unit) |
 | Typecheck | `pnpm typecheck` | 10/10 PASS (theo tiendo) | tiendo dòng 113 | TESTED (theo tiendo, cần chạy lại) |
 | Web build | `pnpm build` | Log cũ 2026-11-18 12:50 | `apps/web/.turbo/turbo-build.log` | UNVERIFIED (log cũ) |
-| Android build | Gradle | BLOCKED | Không có log | MISSING EVIDENCE |
-| CI GitHub Actions | `.github/workflows/*.yml` | Workflow tồn tại; không có kết quả run | Không có log | MISSING EVIDENCE |
+| Android build | Gradle `assembleDebug` | FAILED | `apps/mobile/android/android-build.log` | Gradle 9.4.1 kéo kotlin-stdlib 2.3.0 vào classpath; Expo pin Kotlin 2.1.20. Cần duyệt hướng toolchain |
+| CI Build & Test (run 44452054677, `9539064`) | `build-test.yml` | FAILED ở Lint | Lint: 3 lỗi `no-require-imports` | Đã sửa ở commit `32072db` |
+| CI Build & Test (run 44460394646, `32072db`) | `build-test.yml` | PASS | GitHub Actions run | VERIFIED |
+| CI Architecture Guard (run 44452054855) | `architecture-check.yml` | PASS | GitHub Actions | VERIFIED |
+| Local (sau fix) | lint, typecheck, test, architecture:check, build | PASS | Output phiên này: 65/65 test, typecheck 10/10, build 10/10 | VERIFIED local, chưa xác nhận trên CI |
 | E2E web/mobile | – | Không có | – | NOT_STARTED |
 | Thiết bị/emulator | – | Không có | – | MISSING EVIDENCE |
 
