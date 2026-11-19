@@ -1,0 +1,40 @@
+name: Database (pgTAP)
+
+on:
+  pull_request:
+    paths:
+      - "supabase/**"
+      - ".github/workflows/db-test.yml"
+  push:
+    branches: [main]
+    paths:
+      - "supabase/**"
+      - ".github/workflows/db-test.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pgtap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.2.0
+
+      - name: Start local Supabase stack
+        run: supabase start
+
+      - name: Reset database (migrations + seeds)
+        run: supabase db reset
+
+      - name: Run pgTAP RLS tests
+        run: supabase test db
+
+      - name: Stop local stack
+        if: always()
+        run: supabase stop --no-backup

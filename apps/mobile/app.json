@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Partner OS",
+    "slug": "partner-os",
+    "version": "0.0.0",
+    "orientation": "portrait",
+    "scheme": "partneros",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.partneros.mobile"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "./plugins/with-gradle-wrapper.js"
+    ]
+  }
+}

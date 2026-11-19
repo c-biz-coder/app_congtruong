@@ -1,0 +1,37 @@
+{
+  "name": "@partner-os/mobile",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/main/index.ts",
+  "scripts": {
+    "dev": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nozbe/watermelondb": "^0.28.0",
+    "@partner-os/auth": "workspace:*",
+    "@partner-os/contracts": "workspace:*",
+    "@partner-os/database": "workspace:*",
+    "@partner-os/domain": "workspace:*",
+    "@partner-os/i18n": "workspace:*",
+    "@partner-os/shared-utils": "workspace:*",
+    "@partner-os/sync-engine": "workspace:*",
+    "@partner-os/ui": "workspace:*",
+    "@supabase/supabase-js": "^2.116.0",
+    "expo": "^57.0.24",
+    "expo-network": "~57.0.3",
+    "expo-secure-store": "~57.0.4",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.3.0",
+    "react-native": "0.87.1",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "babel-preset-expo": "~57.0.12",
+    "typescript": "^5.9.3"
+  }
+}

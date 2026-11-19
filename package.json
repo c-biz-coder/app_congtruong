@@ -1,0 +1,48 @@
+{
+  "name": "partner-os-workspace",
+  "private": true,
+  "packageManager": "pnpm@12.5.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "turbo run typecheck",
+    "test": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest --config vitest.config.ts",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json,css,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json,css,yml}\"",
+    "architecture:check": "tsx scripts/check-architecture.ts",
+    "check:dependencies": "tsx scripts/check-dependencies.ts",
+    "validate:env": "tsx scripts/validate-env.ts",
+    "db:generate-types": "tsx scripts/generate-types.ts",
+    "database-reset": "tsx scripts/database-reset.ts",
+    "verify-build": "tsx scripts/verify-build.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@partner-os/auth": "workspace:*",
+    "@partner-os/contracts": "workspace:*",
+    "@partner-os/database": "workspace:*",
+    "@partner-os/domain": "workspace:*",
+    "@partner-os/i18n": "workspace:*",
+    "@partner-os/shared-utils": "workspace:*",
+    "@partner-os/sync-engine": "workspace:*",
+    "@partner-os/ui": "workspace:*",
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "eslint": "^9.39.5",
+    "globals": "^16.0.0",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "turbo": "^2.11.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.70.1",
+    "vitest": "^5.0.1"
+  }
+}

@@ -1,0 +1,52 @@
+# Partner OS Supabase local configuration.
+# Docs: https://supabase.com/docs/reference/cli/config
+
+project_id = "partner-os"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed/roles.sql", "./seed/permissions.sql", "./seed/role_permissions.sql", "./seed/demo.sql"]
+
+[db.migrations]
+enabled = true
+
+[studio]
+enabled = true
+port = 54323
+
+[local_smtp]
+enabled = true
+port = 54324
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+enable_signup = false
+site_url = "http://localhost:3000"
+additional_redirect_urls = []
+
+[auth.expo_template]
+enabled = true
+
+# Adds tenant_id and app_role claims to every access token (see migration 20260923000004).
+[auth.hook.custom_access_token]
+enabled = true
+uri = "pg-functions://postgres/public/custom_access_token_hook"
+
+[analytics]
+enabled = false
