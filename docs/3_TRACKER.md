@@ -47,6 +47,11 @@
 | ADR-001 addendum (mô hình tenant membership) | [x] | n/a | n/a | [ ] | `docs/adr/ADR-001-monorepo.md`; phần đề xuất chưa duyệt |
 | Thiết kế backend tenant membership | [x] (tài liệu) | n/a | n/a | [ ] | Chưa có code; chờ duyệt |
 | 007c / 007d / 007e | [ ] | [ ] | [ ] | [ ] | **BLOCKED**: chờ chủ dự án duyệt. Không triển khai. |
+| 012 — P1-04 `is_project_member` + `write_audit` loại project soft-deleted (`20260923000012`) | [x] | [x] | [x] | [ ] | `db reset` exit 0; `supabase test db` 68/68 PASS (local). Rollback đã áp và kiểm: 1 ca soft-delete FAIL đúng kỳ vọng; re-apply 012 đạt. ACL hai hàm không đổi sau rollback/re-apply. Chưa kiểm trên hosted. |
+| 013 — P1-01/02 ẩn project soft-deleted (policy SELECT `projects`, `is_main_contractor_manager`) (`20260923000013`) | [x] | [x] | [x] | [ ] | `db reset` exit 0; pgTAP `soft_delete_tenant_context.test.sql` PASS trong 81/81. Mutation: gỡ 013–015 → 5 ca FAIL. Chưa kiểm rollback riêng từng file. Chưa kiểm trên hosted. |
+| 014 — P1-04 xác thực tenant từ DB (`current_tenant_id`, `current_app_role`) (`20260923000014`) | [x] | [x] | [x] | [ ] | Pgtap (82/82 PASS): claim tenant không thuộc user → NULL; membership đã xóa + claim cũ → NULL; forged app_role bị bỏ qua. Tenant switcher MVP đã triển khai ở migration 016 (xem dòng 016). Rủi ro: client không có membership nhận NULL; luồng web/mobile UNVERIFIED. ADR-008. |
+| 015 — P1-03 gate `project_companies` ACTIVE cho thao tác nghiệp vụ (`20260923000015`) | [x] | [x] | [x] | [ ] | Pgtap: ACTIVE true, SUSPENDED/ENDED false; audit ghi được với ENDED. Chưa có luồng nghiệp vụ nào gọi hàm gate. ADR-008. |
+| 016 — Tenant switcher MVP, phương án A (`20260923000016`) | [x] | [x] | [/] | [ ] | `db reset` exit 0; pgTAP `tenant_switcher.test.sql` trong 95/95 PASS; `tenant-switch.test.ts` 3/3 PASS; lint/typecheck/test/architecture:check exit 0. Rollback 016 kiểm trong transaction (không áp lên DB giữ lại). UNVERIFIED: `refreshSession()` cấp claim mới trên web/mobile thực tế; UI mobile đã gắn switcher (xem dòng 014 và Mục 14 dòng 31); kiểm tay trình duyệt chưa làm; hosted chưa kiểm. Kiểm trên emulator/thiết bị: BLOCKED ( `adb` không có trong PATH, `ANDROID_HOME` chưa đặt) và chưa có test Watermelon store thật (UNVERIFIED). Mobile đã có loader membership từ DB (`apps/mobile/src/auth/memberships.ts`), switcher gắn guard (`apps/mobile/src/auth/TenantSwitcher.tsx`), cursor sync tách theo tenant; `vitest run` mobile 24/24 PASS; typecheck, lint, architecture:check exit 0. Web không có Outbox nên guard không áp dụng, ghi nhận rõ. Mobile guard test 8/8 (gồm record lỗi đang retry). ACCEPTED (chủ dự án xác nhận 2026-11-21; kiểm trên thiết bị Android vẫn BLOCKED/UNVERIFIED). ADR-008. |
 
 **Bằng chứng kiểm thử (007b, lần chạy gần nhất):**
 - `npx supabase@3.2.0 db reset`: OK, áp dụng migration 000002–000009 và seed.
@@ -84,7 +89,14 @@
 - [ ] **DB/RLS:** bảng `sub_contractors` + more HRM columns (next)
 - [ ] **Web:** Upload chứng chỉ & cảnh báo hết hạn
 - [ ] **Mobile:** Thẻ công nhân QR & tra cứu kỹ năng
-### Module 3: Chấm công & Vị trí — `[ ]`
+### Module 3: Chấm công & Vị trí — `[x]` (vertical slice MVP)
+- [x] **DB/RLS:** migration `20260923000019_init_attendance` + rollback + pgTAP `attendance.test.sql` (6 test: tenant isolation, cross-tenant insert, duplicate (tenant,worker,date), invalid status, worker ngoài tenant, role gate) — `supabase test db` 128/128 PASS
+- [x] **Core:** `Attendance` entity/status enum, rules (workDate, check-out ≥ check-in, note ≤ 500), service, `AttendanceSchema` + DTO (Create/Update/ListQuery) + `AttendanceApi` + events + `AttendanceRepository` interface
+- [x] **Web:** vertical slice — supabase api adapter, application service, zustand store (+3 test), `AttendancePage`; wire vào `App.tsx`
+- [x] **Mobile:** vertical slice — schema v4 (bảng `attendance`) + migration v4, `AttendanceModel`, local store, `localAttendanceRepository` (outbox), `createAttendanceOffline` (+4 test), `AttendanceListPage`; wire vào `App.tsx`
+- [x] **Sync:** `createSupabaseAttendanceTransport` (push/pull, VERSION_CHECK), `createAttendanceSyncRuntime` (cursor tách theo tenant + recordType)
+- [x] i18n: key `nav.attendance` (vi/en/ko)
+- [ ] Vị trí (GPS/location) — để giai đoạn sau; chưa verify trên thiết bị; chưa ACCEPTED
 ### Module 4: An toàn Lao động (HSE & TBM) — `[ ]`
 ### Module 5: Tính lương & Công nhật — `[ ]`
 ### Module 6: Nhà thầu phụ (Hub) — `[ ]`

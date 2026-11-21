@@ -5,6 +5,7 @@ export const vi: Dictionary = {
   nav: {
     projects: 'Công trình',
     workers: 'Nhân sự',
+    attendance: 'Chấm công',
     safety: 'An toàn',
     incidents: 'Sự cố',
     reports: 'Báo cáo',

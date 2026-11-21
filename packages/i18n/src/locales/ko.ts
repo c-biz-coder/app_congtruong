@@ -5,6 +5,7 @@ export const ko: Dictionary = {
   nav: {
     projects: '프로젝트',
     workers: '인력',
+    attendance: '출근부',
     safety: '안전',
     incidents: '사고',
     reports: '보고서',

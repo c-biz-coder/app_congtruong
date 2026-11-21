@@ -5,6 +5,7 @@ export const en: Dictionary = {
   nav: {
     projects: 'Projects',
     workers: 'Workers',
+    attendance: 'Attendance',
     safety: 'Safety',
     incidents: 'Incidents',
     reports: 'Reports',

@@ -3,6 +3,7 @@ export interface Dictionary {
   nav: {
     projects: string;
     workers: string;
+    attendance: string;
     safety: string;
     incidents: string;
     reports: string;
