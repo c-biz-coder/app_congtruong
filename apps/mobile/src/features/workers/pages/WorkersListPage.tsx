@@ -8,6 +8,8 @@ import { colors, spacing, typography } from '@partner-os/ui';
 
 export interface WorkersListPageProps {
   repository: WorkerRepository | null;
+  /** Active tenant from the database-verified membership; only this tenant's rows are shown. */
+  tenantId: string | null;
 }
 
 /**
@@ -15,7 +17,7 @@ export interface WorkersListPageProps {
  * (WatermelonDB-backed once mobile wiring lands). When no repository is wired
  * yet, it states so instead of pretending to be connected.
  */
-export function WorkersListPage({ repository }: WorkersListPageProps): React.JSX.Element {
+export function WorkersListPage({ repository, tenantId }: WorkersListPageProps): React.JSX.Element {
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [loadState, setLoadState] = useState<'idle' | 'loading' | 'loaded' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -26,9 +28,14 @@ export function WorkersListPage({ repository }: WorkersListPageProps): React.JSX
       setError('Local database adapter is not wired yet.');
       return;
     }
+    if (!tenantId) {
+      setWorkers([]);
+      setLoadState('loaded');
+      return;
+    }
     setLoadState('loading');
     void repository
-      .list(undefined)
+      .list({ tenantId })
       .then((rows) => {
         setWorkers(rows);
         setLoadState('loaded');
@@ -38,7 +45,7 @@ export function WorkersListPage({ repository }: WorkersListPageProps): React.JSX
         setError(message);
         setLoadState('error');
       });
-  }, [repository]);
+  }, [repository, tenantId]);
 
   return (
     <View style={styles.container}>

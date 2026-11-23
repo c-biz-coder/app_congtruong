@@ -90,6 +90,7 @@
 - [ ] **Web:** Upload chứng chỉ & cảnh báo hết hạn
 - [ ] **Mobile:** Thẻ công nhân QR & tra cứu kỹ năng
 ### Module 3: Chấm công & Vị trí — `[x]` (vertical slice MVP)
+- [ ] **Attendance — DEFERRED / PENDING_APPROVAL (quyết định owner, chưa nghiệm thu):** chưa triển khai thêm, không mở rộng VS-03. Phần đã có bên dưới giữ nguyên, không ACCEPTED.
 - [x] **DB/RLS:** migration `20260923000019_init_attendance` + rollback + pgTAP `attendance.test.sql` (6 test: tenant isolation, cross-tenant insert, duplicate (tenant,worker,date), invalid status, worker ngoài tenant, role gate) — `supabase test db` 128/128 PASS
 - [x] **Core:** `Attendance` entity/status enum, rules (workDate, check-out ≥ check-in, note ≤ 500), service, `AttendanceSchema` + DTO (Create/Update/ListQuery) + `AttendanceApi` + events + `AttendanceRepository` interface
 - [x] **Web:** vertical slice — supabase api adapter, application service, zustand store (+3 test), `AttendancePage`; wire vào `App.tsx`

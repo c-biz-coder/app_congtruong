@@ -5,6 +5,8 @@ export class SyncOutboxModel extends Model {
   static table = 'sync_outbox';
 
   @field('device_id') deviceId!: string;
+  @field('tenant_id') tenantId!: string;
+  @field('project_id') projectId!: string | null;
   @field('operation_id') operationId!: string;
   @field('record_type') recordType!: string;
   @field('record_id') recordId!: string;
