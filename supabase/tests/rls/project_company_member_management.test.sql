@@ -151,6 +151,10 @@ select throws_ok(
 );
 
 -- t13: removing a member deletes the project membership.
+reset role;
+create temp table t13_audit_baseline as
+  select count(*) as n from public.audit_log where action = 'project_member.removed';
+set local role authenticated;
 select public.remove_project_member(
   (select id from public.project_memberships where project_id = 'd0a11111-1111-4111-8111-111111111111' and user_id = 'd4444444-4444-4444-8444-444444444444')
 );
@@ -161,9 +165,9 @@ select is(
   'manager: project membership is removed'
 );
 
--- t14: removal is audited.
+-- t14: removal is audited (relative to the baseline, so pre-existing audit rows do not matter).
 select is(
-  (select count(*) from public.audit_log where action = 'project_member.removed'),
+  (select count(*) from public.audit_log where action = 'project_member.removed') - (select n from t13_audit_baseline),
   1::bigint,
   'remove_project_member writes a project_member.removed audit row'
 );

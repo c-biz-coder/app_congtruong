@@ -89,7 +89,7 @@
 - [ ] **DB/RLS:** bảng `sub_contractors` + more HRM columns (next)
 - [ ] **Web:** Upload chứng chỉ & cảnh báo hết hạn
 - [ ] **Mobile:** Thẻ công nhân QR & tra cứu kỹ năng
-### Module 3: Chấm công & Vị trí — `[x]` (vertical slice MVP)
+### Module 3: Chấm công & Vị trí — `[ ]` DEFERRED (đến VS-03; code hiện có giữ nguyên, không ACCEPTED)
 - [ ] **Attendance — DEFERRED / PENDING_APPROVAL (quyết định owner, chưa nghiệm thu):** chưa triển khai thêm, không mở rộng VS-03. Phần đã có bên dưới giữ nguyên, không ACCEPTED.
 - [x] **DB/RLS:** migration `20260923000019_init_attendance` + rollback + pgTAP `attendance.test.sql` (6 test: tenant isolation, cross-tenant insert, duplicate (tenant,worker,date), invalid status, worker ngoài tenant, role gate) — `supabase test db` 128/128 PASS
 - [x] **Core:** `Attendance` entity/status enum, rules (workDate, check-out ≥ check-in, note ≤ 500), service, `AttendanceSchema` + DTO (Create/Update/ListQuery) + `AttendanceApi` + events + `AttendanceRepository` interface
@@ -128,3 +128,15 @@
 - [x] GitHub workflow `build-test.yml` + `architecture-check.yml`
 - [ ] Deploy Web lên Production (proxy `deploy.yml`)
 - [ ] Đóng gói APK/IPA (EAS) — workflow stub trong `deploy.yml`
+
+### 2.4 Phase B audit (2026-11-23)
+- [x] DB/Security audit — [DATABASE_SECURITY_AUDIT.md](../DATABASE_SECURITY_AUDIT.md): AUDIT_DONE, TESTED (pgTAP 140/140 PASS, DB local).
+- [x] Multi-tenant và Offline/Sync audit — [OFFLINE_SYNC_AUDIT.md](../OFFLINE_SYNC_AUDIT.md): AUDIT_DONE.
+- [x] DB-SEC-01: PROJECT_MANAGER chỉ gán WORKER/PROJECT_VIEWER — IMPLEMENTED + TESTED (migration 021, pgTAP). PENDING_ACCEPTANCE.
+- [x] PM của SUBCONTRACTOR không quản lý Project Members (quyết định nghiệp vụ đã duyệt) — DB/RPC/RLS đã chặn; pgTAP `subcontractor_pm_project_members.test.sql` (11 test) + E2E `pm.sub` PASS. PENDING_ACCEPTANCE.
+- [x] DB-SEC-03: SUBCONTRACTOR thấy dự án tham gia (ACTIVE/SUSPENDED/ENDED, không soft-delete) — IMPLEMENTED + TESTED (migration 021, pgTAP). PENDING_ACCEPTANCE.
+- [x] VS-01 RPC thành viên (local REST, 2026-11-23): PM của MAIN_CONTRACTOR chỉ gán WORKER/PROJECT_VIEWER; PM SUB bị từ chối quản lý thành viên (thiết kế migration 020). Chi tiết: tiendo dòng 42. PENDING_ACCEPTANCE.
+- [x] Web E2E VS-01 (Playwright 1.49.1, local 2026-11-23): 2 PASS (PM MAIN chỉ thấy WORKER/PROJECT_VIEWER; thêm và thu hồi worker SUB qua UI), 1 PASS (PM SUB là người tham gia thấy dự án ở chế độ chỉ xem, không có form quản lý; gap cũ đã đóng, danh sách web dựa vào RLS). `pnpm e2e` 3/3 PASS. Chưa bao gồm CRUD công ty và tenant switcher. PENDING_ACCEPTANCE. Android thiết bị — BLOCKED.
+- [x] Mobile project list chỉ đọc theo tenant — IMPLEMENTED + TESTED (unit 2 ca, typecheck, lint). Thiết bị: UNVERIFIED/BLOCKED. PENDING_ACCEPTANCE.
+- [ ] Web E2E — UNVERIFIED. Android thiết bị — BLOCKED.
+- Migration 017, 018, 020: TESTED (DB), PENDING_ACCEPTANCE. Không ACCEPTED.

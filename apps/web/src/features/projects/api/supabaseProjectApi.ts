@@ -22,7 +22,7 @@ export interface ProjectCompany {
 }
 
 export interface ProjectApi {
-  listProjects(tenantId: string): Promise<Project[]>;
+  listProjects(): Promise<Project[]>;
   listProjectCompanies(projectId: string): Promise<ProjectCompany[]>;
   addProjectCompany(input: AddProjectCompanyInput): Promise<string>;
   updateProjectCompany(input: UpdateProjectCompanyInput): Promise<void>;
@@ -108,18 +108,21 @@ export function createSupabaseProjectApi(
   client: SupabaseClient = supabaseClient(),
 ): ProjectApi {
   return {
-    async listProjects(tenantId) {
+    /**
+     * Returns projects owned by the tenant and projects it participates in.
+     * RLS (migration 021) decides visibility; the client does not filter by tenant.
+     */
+    async listProjects() {
       const { data, error } = await client
         .from('projects')
         .select('id, tenant_id, site_name, address, status, deleted_at')
-        .eq('tenant_id', tenantId)
         .is('deleted_at', null)
         .order('site_name');
       if (error) {
         throw new Error(`Failed to list projects: ${error.message}`);
       }
       const rows = (data ?? []) as unknown as Row[];
-      return rows.filter((row) => row.tenant_id === tenantId).map(toProject);
+      return rows.map(toProject);
     },
 
     async listProjectCompanies(projectId) {

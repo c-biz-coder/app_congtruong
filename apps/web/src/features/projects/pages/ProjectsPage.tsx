@@ -37,7 +37,7 @@ export function ProjectsPage({
   const [newMemberRole, setNewMemberRole] = useState<ManageableProjectRole>('WORKER');
 
   useEffect(() => {
-    if (!selected) return;
+    if (!selected || selected.tenantId !== tenantId) return;
     let active = true;
     setMembers([]);
     api.listProjectMembers(selected.id).then(
@@ -45,7 +45,7 @@ export function ProjectsPage({
       (err: unknown) => { if (active) setActionError(err instanceof Error ? err.message : 'Không tải được thành viên.'); },
     );
     return () => { active = false; };
-  }, [api, selected, reloadKey]);
+  }, [api, selected, tenantId, reloadKey]);
 
   async function handleAddMember(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
@@ -67,7 +67,7 @@ export function ProjectsPage({
     setProjects(null);
     setError(null);
     setSelected(null);
-    api.listProjects(tenantId).then(
+    api.listProjects().then(
       (rows) => { if (active) setProjects(rows); },
       (err: unknown) => { if (active) setError(err instanceof Error ? err.message : 'Không tải được dự án.'); },
     );
@@ -75,7 +75,7 @@ export function ProjectsPage({
   }, [api, tenantId]);
 
   useEffect(() => {
-    if (!selected) return;
+    if (!selected || selected.tenantId !== tenantId) return;
     let active = true;
     setCompanies([]);
     api.listProjectCompanies(selected.id).then(
@@ -83,7 +83,7 @@ export function ProjectsPage({
       (err: unknown) => { if (active) setError(err instanceof Error ? err.message : 'Không tải được công ty tham gia.'); },
     );
     return () => { active = false; };
-  }, [api, selected, reloadKey]);
+  }, [api, selected, tenantId, reloadKey]);
 
   async function runCompanyAction(action: () => Promise<unknown>): Promise<void> {
     setActionError(null);
@@ -126,13 +126,22 @@ export function ProjectsPage({
               <button className="w-full border p-2 text-left" onClick={() => setSelected(project)}>
                 <span className="font-medium">{project.siteName}</span>
                 <span className="ml-2 text-neutral-500">{PROJECT_STATUS_LABEL[project.status]}</span>
+                {project.tenantId !== tenantId && <span className="ml-2 text-sm text-blue-700">Tham gia (chỉ xem)</span>}
               </button>
             </li>
           ))}
         </ul>
       )}
 
-      {selected && (
+      {selected && selected.tenantId !== tenantId && (
+        <section className="mt-6 border-t pt-4" aria-label="Chi tiết dự án">
+          <h2 className="font-semibold">{selected.siteName}</h2>
+          <p className="text-neutral-500">{selected.address || 'Chưa có địa chỉ'}</p>
+          <p className="mt-2 text-neutral-500">Dự án do đơn vị khác quản lý. Bạn chỉ có quyền xem thông tin dự án.</p>
+        </section>
+      )}
+
+      {selected && selected.tenantId === tenantId && (
         <section className="mt-6 border-t pt-4" aria-label="Chi tiết dự án">
           <h2 className="font-semibold">{selected.siteName}</h2>
           <p className="text-neutral-500">{selected.address || 'Chưa có địa chỉ'}</p>

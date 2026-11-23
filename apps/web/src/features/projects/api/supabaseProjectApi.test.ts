@@ -39,26 +39,28 @@ function fakeClient(result: { data: unknown; error: { message: string } | null }
 }
 
 describe('supabaseProjectApi', () => {
-  it('lists only non-deleted projects of the requested tenant and maps them', async () => {
+  it('lists non-deleted projects returned by RLS (owned or participating) and maps them', async () => {
     const { client, calls } = fakeClient({
       data: [
         { id: 'p1', tenant_id: TENANT, site_name: 'Site A', address: '', status: 'ACTIVE', deleted_at: null },
-        { id: 'p2', tenant_id: OTHER_TENANT, site_name: 'Foreign', address: '', status: 'ACTIVE', deleted_at: null },
+        { id: 'p2', tenant_id: OTHER_TENANT, site_name: 'Participating', address: '', status: 'ACTIVE', deleted_at: null },
       ],
       error: null,
     });
 
-    const projects = await createSupabaseProjectApi(client).listProjects(TENANT);
+    const projects = await createSupabaseProjectApi(client).listProjects();
 
-    expect(projects).toEqual([{ id: 'p1', tenantId: TENANT, siteName: 'Site A', address: '', status: 'ACTIVE' }]);
-    expect(calls).toContainEqual({ table: 'projects', method: 'eq', args: ['tenant_id', TENANT] });
+    expect(projects).toEqual([
+      { id: 'p1', tenantId: TENANT, siteName: 'Site A', address: '', status: 'ACTIVE' },
+      { id: 'p2', tenantId: OTHER_TENANT, siteName: 'Participating', address: '', status: 'ACTIVE' },
+    ]);
     expect(calls).toContainEqual({ table: 'projects', method: 'is', args: ['deleted_at', null] });
   });
 
   it('surfaces database errors instead of returning an empty list', async () => {
     const { client } = fakeClient({ data: null, error: { message: 'permission denied' } });
 
-    await expect(createSupabaseProjectApi(client).listProjects(TENANT)).rejects.toThrow(
+    await expect(createSupabaseProjectApi(client).listProjects()).rejects.toThrow(
       'Failed to list projects: permission denied',
     );
   });

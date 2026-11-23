@@ -21,6 +21,7 @@ import { createSecureCursorStore } from '../sync/secure-cursor-store';
 import { useAutoSync } from '../sync/use-auto-sync';
 import { getActiveTenantId, listMyTenants, type TenantMembership } from '../auth/memberships';
 import { TenantSwitcher } from '../auth/TenantSwitcher';
+import { ProjectListPage } from '../features/projects';
 
 const mobileEnv = readMobileEnv({
   EXPO_PUBLIC_DEVICE_ID: process.env.EXPO_PUBLIC_DEVICE_ID,
@@ -158,6 +159,7 @@ export default function App(): React.JSX.Element {
         onSwitched={setActiveTenantId}
         onSyncNow={syncNow ?? (async () => undefined)}
       />
+      <ProjectListPage client={supabase} />
       <WorkersListPage repository={workerRepository} tenantId={activeTenantId} />
       <AttendanceListPage repository={attendanceRepository} tenantId={activeTenantId} />
     </View>

@@ -47,9 +47,20 @@ Audit P1 phát hiện:
 - `current_tenant_id()` được gọi theo từng row trong RLS; cần đo hiệu năng khi dữ liệu lớn.
 - Chưa có thiết kế khôi phục project đã soft-delete.
 
+## Migration 021 (DB-SEC-01/03, 2026-11-22)
+
+- Lý do: PROJECT_MANAGER gán được SYS_ADMIN/SUB_CONTRACTOR qua `assert_can_touch_role`; công ty SUBCONTRACTOR tham gia dự án không đọc được dự án.
+- Quyết định (owner): PROJECT_MANAGER chỉ gán WORKER và PROJECT_VIEWER; SITE_MANAGER giữ nguyên (legacy); SUB_CONTRACTOR là participation_type, không phải role. Công ty ACTIVE/SUSPENDED/ENDED đang tham gia được đọc dự án (không soft-deleted); không tham gia thì không đọc.
+- Tác động: chỉ đổi `assert_can_touch_role` và policy SELECT của `projects`; thêm `is_participating_company(uuid)` (SECURITY DEFINER, `search_path=''`, execute cho authenticated). Policy ghi và dữ liệu module (workers, attendance) không mở rộng.
+- Rollback: `supabase/rollbacks/20260923000021_project_manager_scope_and_participant_visibility.down.sql`.
+- Kiểm thử: `supabase/tests/rls/subcontractor_project_visibility.test.sql` (11 test); `supabase test db` 16 file / 151 test PASS.
+- Chưa xác nhận: quyền con (workers, attendance) cho công ty SUBCONTRACTOR tham gia; trạng thái ACCEPTED của ADR này vẫn thuộc phạm vi xác nhận trước đó, không áp dụng cho migration 021 cho đến khi owner nghiệm thu.
+- Bổ sung 2026-11-23 (kiểm chứng local REST): PM MAIN thêm/thu hồi thành viên WORKER của tenant SUB OK; gán SUB_CONTRACTOR/SYS_ADMIN/PROJECT_MANAGER bị chặn; PM SUB bị chặn quản lý thành viên (thiết kế migration 020). Sau thu hồi, thành viên công ty SUB vẫn thấy dự án do chính sách công ty tham gia (đúng quyết định, không phải lỗi).
+
 ## Verification
 
 - `supabase db reset`: exit 0.
+
 - `supabase test db`: 81/81 PASS (68 cũ + 13 mới `soft_delete_tenant_context.test.sql`).
 - Mutation check: gỡ rollback 013–015 làm 5 ca mới fail, khôi phục bằng `db reset` và PASS lại.
 - `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm architecture:check`: exit 0.
