@@ -34,7 +34,8 @@ Commit đối chiếu: `592c398` (VS-01), nhánh `chc/rn-086-align`.
 - Lỗ hổng: policy `attendance update within own tenant` (`20260923000019_init_attendance.sql:57`) chỉ kiểm tra `tenant_id`, nên WORKER và PROJECT_VIEWER có thể sửa chấm công.
 - Xử lý: migration `20260925000024_attendance_update_role_gate.sql` (rollback `.down.sql`) thay bằng policy chỉ cho SYS_ADMIN, SITE_MANAGER, SUB_CONTRACTOR, khớp quyền INSERT. Không sửa migration 019 hay `attendance.test.sql`.
 - Bằng chứng: `supabase/tests/rls/attendance_update_role_gate.test.sql` (WORKER 0 dòng, PROJECT_VIEWER 0 dòng, SITE_MANAGER 1 dòng). `supabase test db` 20 file / 191 test PASS.
-- Còn lại (chưa xử lý, thuộc slice Workers/Sync): `workers` vẫn ghi trực tiếp từ client (`apps/web/src/features/workers/api/supabaseWorkerApi.ts`, `apps/mobile/src/sync/supabase-sync-transport.ts`) dựa vào RLS; chưa có RPC. Attendance giữ DEFERRED.
+- `workers`: policy INSERT/UPDATE/DELETE đã giới hạn role từ migration 004 (kiểm tra live `pg_policies`). Bổ sung `supabase/tests/rls/workers_update_role_gate.test.sql` (WORKER 0 dòng, SITE_MANAGER 1 dòng). Client ghi trực tiếp vẫn dựa vào RLS; chưa tạo RPC vì không có lỗ hổng quyền.
+- Attendance giữ DEFERRED.
 
 ### DB-SEC-06 (P3): trùng định nghĩa `add_project_member` — FIXED_PENDING_ACCEPTANCE
 - `add_project_member` được định nghĩa ở 017, 018 và 020. Bản 020 có hiệu lực. Không sửa lịch sử.
