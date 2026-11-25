@@ -136,6 +136,10 @@
 - [x] PM của SUBCONTRACTOR không quản lý Project Members (quyết định nghiệp vụ đã duyệt) — DB/RPC/RLS đã chặn; pgTAP `subcontractor_pm_project_members.test.sql` (11 test) + E2E `pm.sub` PASS. PENDING_ACCEPTANCE.
 - [x] DB-SEC-03: SUBCONTRACTOR thấy dự án tham gia (ACTIVE/SUSPENDED/ENDED, không soft-delete) — IMPLEMENTED + TESTED (migration 021, pgTAP). PENDING_ACCEPTANCE.
 - [x] VS-01 RPC thành viên (local REST, 2026-11-23): PM của MAIN_CONTRACTOR chỉ gán WORKER/PROJECT_VIEWER; PM SUB bị từ chối quản lý thành viên (thiết kế migration 020). Chi tiết: tiendo dòng 42. PENDING_ACCEPTANCE.
+- [x] DB-SEC-04 (write_audit allowlist 8 action, migration 20260925000023) và DB-SEC-06 (consolidate add_project_member, migration 20260925000022): IMPLEMENTED + TESTED local (`supabase test db` 19 file / 188 PASS; `pnpm test` 117/117; `pnpm architecture:check` PASS). ADR-009. PENDING_ACCEPTANCE.
+- [x] DB-SEC-05 (attendance UPDATE): migration 20260925000024 siết quyền UPDATE; pgTAP PASS (FIXED_PENDING_ACCEPTANCE). Còn mở: workers ghi trực tiếp từ client, chưa có RPC.
+- [ ] DB-SEC-02 (MAIN_BOD): đã điều tra, không còn tham chiếu live; chờ acceptance. Attendance giữ DEFERRED.
+- [ ] Android thiết bị/emulator: BLOCKED (không có thiết bị). Không đánh dấu PASS.
 - [x] Web E2E VS-01 (Playwright 1.49.1, local 2026-11-23): 2 PASS (PM MAIN chỉ thấy WORKER/PROJECT_VIEWER; thêm và thu hồi worker SUB qua UI), 1 PASS (PM SUB là người tham gia thấy dự án ở chế độ chỉ xem, không có form quản lý; gap cũ đã đóng, danh sách web dựa vào RLS). `pnpm e2e` 3/3 PASS. Chưa bao gồm CRUD công ty và tenant switcher. PENDING_ACCEPTANCE. Android thiết bị — BLOCKED.
 - [x] Mobile project list chỉ đọc theo tenant — IMPLEMENTED + TESTED (unit 2 ca, typecheck, lint). Thiết bị: UNVERIFIED/BLOCKED. PENDING_ACCEPTANCE.
 - [ ] Web E2E — UNVERIFIED. Android thiết bị — BLOCKED.

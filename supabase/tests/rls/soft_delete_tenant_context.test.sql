@@ -126,7 +126,7 @@ select ok(
 );
 
 select lives_ok(
-  $$select public.write_audit('SDV_STATUS_CHANGE', 'project_company', 'x', null, 'b0211111-1111-4111-8111-111111111111',
+  $$select public.write_audit('project_company.ended', 'project_company', 'x', null, 'b0211111-1111-4111-8111-111111111111',
       (select id from public.project_companies where project_id = 'b0211111-1111-4111-8111-111111111111' and participation_type = 'MAIN_CONTRACTOR'),
       '{"reason":"ended"}', 'sdv-ended-1')$$,
   'project company ENDED: administrative audit is still written'
